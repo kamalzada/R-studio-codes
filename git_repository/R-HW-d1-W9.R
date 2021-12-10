@@ -82,7 +82,7 @@ data3 %>% ggplot(aes(SCHEDULED_DEPARTURE, DEPARTURE_TIME)) +
 # Question_9
 
 data3 %>% ggplot() + geom_miss_point(aes(ARRIVAL_DELAY, ARRIVAL_TIME), na.rm=F) +
-  scale_colour_manual(name = "Flights data", values = c("blue", "green"))   
+ scale_colour_manual(name = "Flights data", values = c("blue", "green"))   
 
 
 
