@@ -61,11 +61,40 @@ data <- fread('HR.csv')
 data %>% view()
 
 # Question_5
+unique_values <- vector()
+for (col in colnames(data)){
+  unique_values <- append(unique_values, length(unique(data[[col]])))
+}
+column_unique <- cbind(columns=colnames(data), unique_values) %>% as.data.frame()
+column_unique %>% view()
+data$left <-  as.factor(data$left)
+data$Work_accident <-  as.factor(data$Work_accident)
+data$promotion_last_5years <-  as.factor(data$promotion_last_5years)
+data$salary <-  as.factor(data$salary)
+
+# Question_6
 
 
 
+# Question_7
 
+data %>% mutate(experience=case_when(time_spend_company>3 ~ 'Experienced',
+                          time_spend_company<=3 ~ 'Inexperienced')) %>% view()
 
+# Question_8
+data %>% group_by(Department) %>% summarise(number=sum(left)) %>% 
+filter(number==max(number))
+
+# Question_9
+
+data %>% glimpse()
+lr <- data %>% group_by(salary) %>% summarise(say=sum(left)) %>% as.data.frame()
+ggplot(data=lr, aes(x=salary, y=say)) + geom_bar(stat='identity', fill='blue')  
+
+# Question_10
+
+data %>% filter(time_spend_company>3, last_evaluation>0.72,
+                number_project>4, left==1) %>% view()
 
 
 
