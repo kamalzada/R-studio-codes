@@ -44,16 +44,12 @@ df %>% view()
 colSums(is.na(df)) %>% as.data.frame() %>% filter(.>0) # columns containing na values
 df %>% select(MonthlyIncome, NumCompaniesWorked, PercentSalaryHike, TotalWorkingYears ,      
               YearsAtCompany, YearsSinceLastPromotion, YearsWithCurrMager, EnvironmentSatisfaction,
-              JobSatisfaction, WorkLifeBalance) %>% head()
+              JobSatisfaction, WorkLifeBalance) %>% head() 
 
-# these two appear to be numeric but have very few unique values
-# so we'll fill na values with mode and the rest with median
-df$WorkLifeBalance %>% unique() 
-df$EnvironmentSatisfaction %>% unique()
-
-for (col in colnames(df)){
-  if 
+for(i in 1:ncol(df)){
+  df[is.na(df[[i]]), i] <- median(df[[i]], na.rm = TRUE)
 }
+colSums(is.na(df)) # no column has null values now
 
 # Question_4
 
@@ -61,6 +57,7 @@ data <- fread('HR.csv')
 data %>% view()
 
 # Question_5
+
 unique_values <- vector()
 for (col in colnames(data)){
   unique_values <- append(unique_values, length(unique(data[[col]])))
@@ -74,7 +71,10 @@ data$salary <-  as.factor(data$salary)
 
 # Question_6
 
-
+for(i in 1:ncol(data)){
+  data[is.na(data[[i]]), i] <- median(data[[i]], na.rm = TRUE)
+}
+colSums(is.na(data))
 
 # Question_7
 
@@ -82,8 +82,9 @@ data %>% mutate(experience=case_when(time_spend_company>3 ~ 'Experienced',
                           time_spend_company<=3 ~ 'Inexperienced')) %>% view()
 
 # Question_8
-data %>% group_by(Department) %>% summarise(number=sum(left)) %>% 
-filter(number==max(number))
+data$left <- as.numeric(data$left) # conversion back to numeric because factor type cannot be summed
+data %>% group_by(Department) %>% summarise(say=sum(left)) %>% 
+filter(say==max(say)) 
 
 # Question_9
 
