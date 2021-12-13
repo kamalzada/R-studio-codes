@@ -33,7 +33,6 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   output$text <- renderText({"Glimpse of Future-500 data:"})
   output$static <- renderTable(df %>% glimpse() %>% head()) 
-  output$dynamic <- renderTable(df %>% skimr::skim() %>% filter(skim_type=='numeric'))
   output$dynamic = renderUI({
     if (input$type=='Numeric'){
       renderTable(df %>% skimr::skim() %>% filter(skim_type=='numeric'))
@@ -51,8 +50,7 @@ server <- function(input, output, session) {
            facet_wrap(~Industry) + scale_y_continuous() + scale_x_continuous() + 
            labs(title='Total Profit per Industry throghout the years') + xlab('years') + ylab('total profit') )
     )
-    output$l <- renderTable(df_grouped %>% head(input$n)) 
-    
+    output$l <- renderTable(df %>% group_by(Inception, Industry) %>% summarise(total=sum(Profit)) %>% arrange(desc(total)) %>% head(input$n)) 
 }  
 shinyApp(ui, server)    
 
