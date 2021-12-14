@@ -33,31 +33,41 @@ for (col in 1:ncol(df_cat)){
 df_cat <- cbind(cyl=df$cyl, df_cat) %>% as.data.frame()
 
 df <- cbind(df_num, df_cat) %>% as.data.frame()
-df <- df %>% scale()
+df <- df %>% scale() %>% as.data.frame()
 df %>% view()
 
+# Initializing h2o
 h2o.init()
 h2o_data <- df %>% as.h2o()
 h2o_data <- h2o_data %>% h2o.splitFrame(ratios = 0.85, seed = 123)
 train <- h2o_data[[1]]
 test <- h2o_data[[2]]
-df %>% names()
-target <- 'Life_expectancy'
-features <- df %>% select(-Life_expectancy) %>% names()
 
+target <- 'cty'
+x_columns <- df %>% select(-cty) %>% names()
+
+# Model fitting
 model <- h2o.glm(
-  x = features, y = target,
+  x = x_columns, y = target,
   training_frame = train,
   validation_frame = test,
   nfolds = 10, seed = 123,
   lambda = 0, compute_p_values = T)
 
+# Coefficients table
 model@model$coefficients_table %>%
   as.data.frame() %>%
   dplyr::select(names,p_value) %>%
   mutate(p_value = round(p_value,3)) %>%
   .[-1,] %>%
   arrange(desc(p_value))
+
+# Q_4-Run glm model with specific x's
+model2 <- glm(cty~year+cyl+displ, family = gaussian, df, 
+              method = "glm.fit")
+
+model2$coefficients 
+
 
 
 
