@@ -24,7 +24,7 @@ ui <- fluidPage(
   plotOutput("plot_na"),
   plotOutput("plot_cor"),
   plotOutput('bar'),
-  numericInput('n', 'Number of Samples',0, min=1, max=200),
+  numericInput('n', 'Number of Samples',1, min=1, max=200),
   actionButton('b', 'Ok'),
   tableOutput('l'),
 
@@ -50,11 +50,14 @@ server <- function(input, output, session) {
            facet_wrap(~Industry) + scale_y_continuous() + scale_x_continuous() + 
            labs(title='Total Profit per Industry throghout the years') + xlab('years') + ylab('total profit') )
     )
-  
-    output$l <- renderTable({
-      input$b
-      isolate(df %>% group_by(Inception, Industry) %>% summarise(total=sum(Profit)) %>% arrange(desc(total)) %>% head(input$n))
+  data <- eventReactive(input$b, { 
+    df %>% group_by(Inception, Industry) %>% summarise(total=sum(Profit)) %>% arrange(desc(total)) %>% head(input$n)
     })
+  output$l <- renderTable({
+    data()
+    }
+    
+  )  
   
 }  
 shinyApp(ui, server)    
